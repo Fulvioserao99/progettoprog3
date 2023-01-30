@@ -2,9 +2,9 @@ public class Cell {
 
     private CellVal value;
     private CellVal north;
-    private CellVal east;
     private CellVal south;
     private CellVal west;
+    private CellVal east;
 
     public Cell(CellVal value, CellVal north, CellVal east, CellVal west, CellVal south)  {
         this.value = value;
@@ -60,5 +60,70 @@ public class Cell {
 
     public void setWest(CellVal west) {
         this.west = west;
+    }
+    public CellVal getOppositeDir(DirectionTo direction) {
+        switch(direction) {
+            case north:
+                return this.getSouth();
+            case south:
+                return this.getNorth();
+            case west:
+                return this.getEast();
+            case east:
+                return this.getWest();
+        }
+
+        return null;
+    }
+
+    public void setOppositeDir(DirectionTo direction, CellVal value) {
+        switch(direction) {
+            case north:
+                this.setSouth(value);
+                break;
+            case south:
+                this.setNorth(value);
+                break;
+            case east:
+                this.setWest(value);
+                break;
+            case west:
+                this.setEast(value);
+                break;
+        }
+    }
+
+
+    public CellVal getDirection(DirectionTo direction) {
+        switch(direction) {
+            case north:
+                return this.getNorth();
+            case south:
+                return this.getSouth();
+            case east:
+                return this.getEast();
+            case west:
+                return this.getWest();
+        }
+
+        return null;
+    }
+
+
+    public void setDirection(DirectionTo direction, CellVal value) {
+        switch(direction) {
+            case north:
+                this.setNorth(value);
+                break;
+            case south:
+                this.setSouth(value);
+                break;
+            case east:
+                this.setEast(value);
+                break;
+            case west:
+                this.setWest(value);
+                break;
+        }
     }
 }
