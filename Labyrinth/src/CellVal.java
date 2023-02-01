@@ -5,4 +5,12 @@ public enum CellVal {
         empty,
 
         crossed,
+
+        green,
+
+        cyan,
+
+        red,
+
+        yellow
 }
