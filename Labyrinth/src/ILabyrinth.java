@@ -4,4 +4,6 @@ public interface ILabyrinth {
 
     public void setCell(int x, int y, Cell cell);
     public void printLab();
+
+    public void printNeighboursNumber();
 }

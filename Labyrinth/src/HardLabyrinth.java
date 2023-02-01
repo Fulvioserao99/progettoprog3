@@ -80,5 +80,10 @@ public class HardLabyrinth extends Labyrinth{
 
     }
 
+    public  void printNeighboursNumber(){
+
+
+    };
+
 
 }

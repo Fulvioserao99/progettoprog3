@@ -56,4 +56,6 @@ public abstract class Labyrinth implements ILabyrinth{
             }
         }
     }
+
+    public abstract void printNeighboursNumber();
 }

@@ -9,5 +9,9 @@ public class EasyLabyrinth extends Labyrinth{
         getCell(2,2).setValue(CellVal.wall);
     }
 
+    public void printNeighboursNumber(){
+
+
+    };
 
 }
