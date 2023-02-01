@@ -1,23 +1,28 @@
-public class MediumLabyrinth implements ILabyrinth{
-    private Cell[][] lab;
-    private Position startPos;
-    private Position endPos;
+public class MediumLabyrinth extends Labyrinth{
 
-    public MediumLabyrinth(){
+    MediumLabyrinth(){
+        super(8,8);
+    }
+    public void generateLab(){
+        getCell(1,2).setValue(CellVal.wall);
+        getCell(1,3).setValue(CellVal.wall);
+        getCell(2,2).setValue(CellVal.wall);
+        getCell(2,3).setValue(CellVal.wall);
 
-        lab = new Cell[8][8];
-        this.startPos = new Position(0,0);
-        this.endPos = new Position(8,8);
+        getCell(1,6).setValue(CellVal.wall);
+        getCell(1,7).setValue(CellVal.wall);
 
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                lab[i][j] = new Cell();
-            }
-        }
+        getCell(3,7).setValue(CellVal.wall);
+
+        getCell(5,1).setValue(CellVal.wall);
+
+        getCell(4,4).setValue(CellVal.wall);
+        getCell(4,5).setValue(CellVal.wall);
+        getCell(5,4).setValue(CellVal.wall);
+        getCell(5,5).setValue(CellVal.wall);
+
+        getCell(7,3).setValue(CellVal.wall);
+
     }
 
-    @Override
-    public void generateLab() {
-        //
-    }
 }
