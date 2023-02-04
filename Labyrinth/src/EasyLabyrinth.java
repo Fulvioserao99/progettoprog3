@@ -14,4 +14,10 @@ public class EasyLabyrinth extends Labyrinth{
 
     };
 
+    public void createGraph(){}
+
+    @Override
+    public void printIds() {
+
+    }
 }

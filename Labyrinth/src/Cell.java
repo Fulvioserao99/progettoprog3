@@ -3,58 +3,67 @@ import java.util.ArrayList;
 public class Cell {
 
     private CellVal value;
+
+    Boolean visited = false;
     Position pos;
 
+    Integer id;
 
-    public Cell(CellVal value, Position pos)  {
+
+
+    ArrayList<Cell> neighbours;
+
+
+    public Cell(CellVal value, Position pos, int id)  {
         this.value = value;
         this.pos = pos;
+        this.neighbours = new ArrayList<>(8);
+        this.id = id;
 
     }
 
     public Cell(){
         this.value = CellVal.empty;
+        this.neighbours = new ArrayList<>(8);
 
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setVisited(Boolean visited) {
+        this.visited = visited;
+    }
+
+    public Boolean isVisited() {
+        return visited;
+    }
+
+    public void addNeighbours(Cell neighbour) {
+        this.neighbours.add(neighbour);
+    }
+
+    public ArrayList<Cell> getNeighbours() {
+        return neighbours;
     }
 
     public CellVal getValue() {
         return value;
     }
 
+    public Position getPos() {
+        return pos;
+    }
+
     public void setValue(CellVal value) {
         this.value = value;
     }
 
-    public ArrayList<Position> getNeighbours(int dim){
 
-        ArrayList<Position> positions = new ArrayList<>(8);
-
-        if(pos.getX()-1 >= 0 && pos.getY()-1 >=0)
-            positions.add(new Position(pos.getX()-1,pos.getY()-1));
-
-        if(pos.getX() >=0 && pos.getY()-1>=0)
-            positions.add(new Position(pos.getX()-1,pos.getY()-1));
-
-        if(pos.getX()+1 >=0 && pos.getY()-1 >=0 && pos.getY()-1<=dim-1 && pos.getX()+1 <=dim-1)
-            positions.add(new Position(pos.getX()+1,pos.getY()-1));
-
-        if(pos.getX()+1 <=dim-1 && pos.getY() <= dim-1 && pos.getX()+1 >=0 && pos.getY() >=0)
-            positions.add(new Position(pos.getX()+1,pos.getY()));
-
-        if(pos.getX()+1 <=dim-1 && pos.getY()+1 <=dim-1 && pos.getX()+1 >=0 && pos.getY()+1 >=0)
-            positions.add(new Position(pos.getX()+1,pos.getY()+1));
-
-        if(pos.getX() <=dim-1 && pos.getY()+1 <=dim-1 && pos.getX() >=0 && pos.getY()+1 >=0)
-            positions.add(new Position(pos.getX(),pos.getY()+1));
-
-        if(pos.getX()-1 <=dim-1 && pos.getY()+1 <=dim-1 && pos.getX()-1 >=0 && pos.getY()+1 >=0)
-            positions.add(new Position(pos.getX()-1,pos.getY()+1));
-
-        if(pos.getX()-1 >=0 && pos.getY() >=0 && pos.getX()-1 <=dim-1 && pos.getY() <=dim-1)
-            positions.add(new Position(pos.getX()-1,pos.getY()));
-
-
-        return positions;
-    }
 
 }

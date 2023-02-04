@@ -28,26 +28,95 @@ public class MediumLabyrinth extends Labyrinth {
 
     }
 
+    public void createGraph(){
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                if (this.getCell(i,j).getValue() == CellVal.wall)
+                    continue;
+
+                if(i-1 >= 0 && j-1 >=0){
+                    if (this.getCell(i-1,j-1).getValue() != CellVal.wall)
+                       this.getCell(i,j).addNeighbours(this.getCell(i-1,j-1));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i-1,j-1).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i >=0 && j-1>=0){
+                    if (this.getCell(i,j-1).getValue() != CellVal.wall)
+                        this.getCell(i,j).addNeighbours(this.getCell(i,j-1));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i,j-1).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i+1 >=0 && j-1 >=0 && j-1<=8-1 && i+1 <=8-1){
+                    if (this.getCell(i+1,j-1).getValue() != CellVal.wall)
+                        this.getCell(i,j).addNeighbours(this.getCell(i+1,j-1));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i+1,j-1).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i+1 <=8-1 && j <= 8-1 && i+1 >=0 && j >=0){
+                    if (this.getCell(i+1,j).getValue() != CellVal.wall)
+                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i+1,j).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i+1 <=8-1 && j+1 <=8-1 && i+1 >=0 && j+1 >=0){
+                    if (this.getCell(i+1,j+1).getValue() != CellVal.wall)
+                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j + 1));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i+1,j+1).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i <=8-1 && j+1 <=8-1 && i >=0 && j >=0){
+                    if (this.getCell(i, j + 1).getValue() != CellVal.wall)
+                        this.getCell(i, j).addNeighbours(this.getCell(i, j + 1));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i,j+1).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i-1 <=8-1 && j+1 <=8-1 && i-1 >=0 && j+1 >=0){
+                    if (this.getCell(i - 1, j + 1).getValue() != CellVal.wall)
+                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j + 1));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i-1,j+1).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+
+                if(i-1 >=0 && j >=0 && i-1 <=8-1 && j <=8-1){
+                    if (this.getCell(i-1,j).getValue() != CellVal.wall)
+                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j));
+                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i-1,j).getId());
+                        this.getEdge2distance().put(edge,1);
+                    }
+            }
+        }
+
+    }
     public void printNeighboursNumber() {
 
         for (int i = 0; i < 8; i++) {
             System.out.println();
             for (int j = 0; j < 8; j++){
-                System.out.print(this.getLab()[i][j].getNeighbours(8).size());
-                if (i==7 && j == 7){
-                    System.out.println("0;0 --->");
-                    ArrayList<Position> var = this.getLab()[i][j].getNeighbours(8);
-                    for (int k=0; k<var.size(); k++){
-                        System.out.print("x:" + var.get(k).getX() + " y:" + var.get(k).getY());
-                        System.out.println();
-                    }
-
-                }
+                System.out.print(this.getCell(i,j).getNeighbours().size());
             }
+        }
+    };
+
+    public void printIds() {
+
+        for (int i = 0; i < 8; i++) {
+            System.out.println();
+            for (int j = 0; j < 8; j++){
+                System.out.print(this.getCell(i,j).getId());
+            }
+        }
+    };
 
 
-        };
 
-    }
 
 }
+
+

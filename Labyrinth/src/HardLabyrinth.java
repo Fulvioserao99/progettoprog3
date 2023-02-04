@@ -85,5 +85,10 @@ public class HardLabyrinth extends Labyrinth{
 
     };
 
+    public void createGraph(){}
 
+    @Override
+    public void printIds() {
+
+    }
 }
