@@ -7,7 +7,20 @@ public class AntColonyTwoCells implements Strategy{
     private AntSystem aco;
 
     public AntColonyTwoCells(Map<Pair<Integer, Integer>, Integer> edges) {
-        this.aco = new AntSystem(edges, 100, 500);
+        int ants,iterations;
+        if (edges.size() == 256){
+            ants = 100;
+            iterations = 100;
+        }
+        else if (edges.size() > 256){
+            ants = 200;
+            iterations = 300;
+        }
+        else{
+            ants = 65;
+            iterations = 100;
+        }
+        this.aco = new AntSystem(edges, ants, iterations);
     }
 
     @Override

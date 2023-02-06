@@ -1,11 +1,14 @@
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 public class Game {
 
     private Labyrinth lab;
 
     private Robot robot;
+
+    ArrayList<PositionSubscriber> subscribers;
 
     //file?
 
@@ -31,7 +34,21 @@ public class Game {
                 break;
         }
         this.robot = new Robot(nome,cognome,lab.getCell(0,0),new PursuitState(this.lab.getEdge2distance(), this.lab.getCell(0,0)));
+        subscribers = new ArrayList<>();
+    }
 
+    void subscribe(PositionSubscriber o){
+        subscribers.add(o);
+    }
+    
+    void unSubscribe(PositionSubscriber o){
+        subscribers.remove(o);
+    }
+    
+    void notifySubscribers(){
+        for (PositionSubscriber o:subscribers) {
+            o.update(this.robot.getPositionCoords(),this.getLab(),this.lab.getDim());
+        }
     }
 
     public Cell[][] getLab() {
@@ -61,6 +78,10 @@ public class Game {
                         maze[i][j].setValue(CellVal.green);
                 }
             }
+    }
+
+    Position goal(){
+        return this.getLab()[this.lab.getDim()-1][this.lab.getDim()-1].getPos();
     }
 
     void printLabyrinth(){
