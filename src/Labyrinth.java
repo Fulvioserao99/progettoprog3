@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -9,11 +10,12 @@ public abstract class Labyrinth implements ILabyrinth{
     private Position endPos;
     public abstract void generateLab();
 
-    int dim;
+    private int dim;
     private Map<Pair<Integer, Integer>, Integer> edge2distance;
 
-    AntSystem aco;
+    private AntSystem aco;
 
+    private ArrayList<Cell> graphNeighbours;
 
     public Labyrinth(int dim){
 
@@ -28,6 +30,7 @@ public abstract class Labyrinth implements ILabyrinth{
         }
         this.edge2distance = new HashMap<>();
         this.dim = dim;
+        this.graphNeighbours = new ArrayList<>();
     }
     public Cell[][] getLab() {
         return lab;
@@ -43,13 +46,6 @@ public abstract class Labyrinth implements ILabyrinth{
         lab[x][y] = cell;
     }
 
-    public Vector<Integer> antColonyOptimization(Map<Pair<Integer, Integer>, Integer> edge, int source, int dest){
-
-        aco = new AntSystem(edge,AntSystem.ANTS,AntSystem.ITERATIONS);
-        Vector<Integer> bestPath = aco.path(source,dest);
-        return bestPath;
-
-    }
 
     public Map<Pair<Integer, Integer>, Integer> getEdge2distance() {
         return edge2distance;
@@ -65,6 +61,10 @@ public abstract class Labyrinth implements ILabyrinth{
 
     public int getDim() {
         return dim;
+    }
+
+    Cell getCellById(int id){
+        return graphNeighbours.get(id);
     }
 
     public Position getStartPos() {
@@ -83,8 +83,10 @@ public abstract class Labyrinth implements ILabyrinth{
         int id = 0;
         for (int i = 0; i < this.getDim(); i++)
             for (int j = 0; j < this.getDim(); j++)
-                if (this.getCell(i, j).getValue() != CellVal.wall)
+                if (this.getCell(i, j).getValue() != CellVal.wall) {
                     this.getCell(i, j).setId(id++);
+                    this.graphNeighbours.add(this.getCell(i, j));
+                }
 
 
         for (int i = 0; i < this.getDim(); i++) {

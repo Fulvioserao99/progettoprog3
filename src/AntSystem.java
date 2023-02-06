@@ -144,7 +144,6 @@ public class AntSystem
     private double[][] createPheroTopo()
     {
         double[][] edge2phero = new double[nodes.size()][nodes.size()];
-        System.out.println(nodes.size());
         for(int i = 0; i < nodes.size(); ++i)
             for(int j = 0; j < nodes.size(); ++j)
                 edge2phero[i][j] = NO_PHEROMONE;

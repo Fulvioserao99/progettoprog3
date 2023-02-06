@@ -7,15 +7,22 @@ public class AntColonyTwoCells implements Strategy{
     private AntSystem aco;
 
     public AntColonyTwoCells(Map<Pair<Integer, Integer>, Integer> edges) {
-        this.aco = new AntSystem(edges, 100, 100);
+        this.aco = new AntSystem(edges, 100, 500);
     }
 
     @Override
     public ArrayList<Integer> calculateNextMove(Cell cell) {
-        Vector<Integer> path = aco.path(cell.getId(),aco.getNodes().size()-1);
+        Vector<Integer>path;
+        int size = 0;
+        do{
+            path = aco.path(cell.getId(),aco.getNodes().size()-1);
+        }
+        while(path.size() == 0);
         ArrayList<Integer> result = new ArrayList<>(2);
-        result.add(path.get(1));
-        result.add(path.get(2));
+
+        while (size < path.size() && size < 2)
+            result.add(path.get(size++));
+
         return result;
     }
 }

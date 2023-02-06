@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Robot implements State{
+public class Robot{
     private State robotState;
     private State prevState;
     private String nome;
@@ -20,6 +20,10 @@ public class Robot implements State{
 
     public void setActualCell(Cell actualCell) {
         this.actualCell = actualCell;
+    }
+
+    Position getPositionCoords(){
+        return this.actualCell.getPos();
     }
 
     public Cell getActualCell() {
@@ -43,10 +47,8 @@ public class Robot implements State{
     }
 
 
-    @Override
-    public ArrayList<Integer> doAction(Cell cell) {
 
-        setActualCell(cell);
+    public ArrayList<Integer> doAction(Cell cell) {
         return this.robotState.doAction(cell);
     }
 }

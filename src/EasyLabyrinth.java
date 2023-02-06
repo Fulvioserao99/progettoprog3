@@ -1,7 +1,7 @@
 public class EasyLabyrinth extends Labyrinth{
 
     EasyLabyrinth(){
-        super(8);
+        super(4);
     }
 
     public void generateLab(){
