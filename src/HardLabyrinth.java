@@ -1,6 +1,6 @@
 public class HardLabyrinth extends Labyrinth{
     HardLabyrinth(){
-        super(16,16);
+        super(16);
     }
 
     public void generateLab(){
@@ -85,7 +85,6 @@ public class HardLabyrinth extends Labyrinth{
 
     };
 
-    public void createGraph(){}
 
     @Override
     public void printIds() {

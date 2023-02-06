@@ -9,8 +9,8 @@ public class Robot implements State{
 
     Cell actualCell;
 
-    Robot(String nome, String cognome, Cell cell){
-        robotState = null;
+    Robot(String nome, String cognome, Cell cell, State robotState){
+        this.robotState = robotState;
         prevState = null;
         this.nome = nome;
         this.cognome = cognome;

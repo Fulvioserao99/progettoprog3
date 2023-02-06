@@ -3,6 +3,7 @@ public class HardLabCreator extends LabCreator{
     public ILabyrinth createLab() {
         HardLabyrinth lab =  new HardLabyrinth();
         lab.generateLab();
+        lab.createGraph();
         return lab;
     }
 }

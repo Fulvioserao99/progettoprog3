@@ -7,6 +7,7 @@ public class MediumLabCreator extends LabCreator{
     public ILabyrinth createLab() {
         MediumLabyrinth lab =  new MediumLabyrinth();
         lab.generateLab();
+        lab.createGraph();
         return lab;
     }
 }

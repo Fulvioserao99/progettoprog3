@@ -22,6 +22,13 @@ public class Cell {
 
     }
 
+    public Cell(CellVal value, Position pos)  {
+        this.value = value;
+        this.pos = pos;
+        this.neighbours = new ArrayList<>(8);
+
+    }
+
     public Cell(){
         this.value = CellVal.empty;
         this.neighbours = new ArrayList<>(8);

@@ -15,19 +15,19 @@ public abstract class Labyrinth implements ILabyrinth{
     AntSystem aco;
 
 
-    public Labyrinth(int col, int rows){
+    public Labyrinth(int dim){
 
-        lab = new Cell[col][rows];
+        lab = new Cell[dim][dim];
         startPos = new Position(0,0);
-        endPos = new Position(col-1,rows-1);
+        endPos = new Position(dim-1,dim-1);
         int count=0;
-        for(int i = 0; i < col; i++) {
-            for(int j = 0; j < rows; j++) {
-                lab[i][j] = new Cell(CellVal.empty,new Position(i,j),count++);
+        for(int i = 0; i < dim; i++) {
+            for(int j = 0; j < dim; j++) {
+                lab[i][j] = new Cell(CellVal.empty,new Position(i,j));
             }
         }
         this.edge2distance = new HashMap<>();
-        this.dim = col;
+        this.dim = dim;
     }
     public Cell[][] getLab() {
         return lab;
@@ -63,6 +63,10 @@ public abstract class Labyrinth implements ILabyrinth{
         return endPos;
     }
 
+    public int getDim() {
+        return dim;
+    }
+
     public Position getStartPos() {
         return startPos;
     }
@@ -75,9 +79,80 @@ public abstract class Labyrinth implements ILabyrinth{
         this.startPos = startPos;
     }
 
-    public abstract void createGraph();
+    public void createGraph() {
+        int id = 0;
+        for (int i = 0; i < this.getDim(); i++)
+            for (int j = 0; j < this.getDim(); j++)
+                if (this.getCell(i, j).getValue() != CellVal.wall)
+                    this.getCell(i, j).setId(id++);
+
+
+        for (int i = 0; i < this.getDim(); i++) {
+            for (int j = 0; j < this.getDim(); j++) {
+                if (this.getCell(i, j).getValue() == CellVal.wall)
+                    continue;
+
+                if (i - 1 >= 0 && j - 1 >= 0)
+                    if (this.getCell(i - 1, j - 1).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j - 1));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i - 1, j - 1).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i >= 0 && j - 1 >= 0)
+                    if (this.getCell(i, j - 1).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i, j - 1));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i, j - 1).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i + 1 >= 0 && j - 1 >= 0 && j - 1 <= this.getDim() - 1 && i + 1 <= this.getDim() - 1)
+                    if (this.getCell(i + 1, j - 1).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j - 1));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i + 1, j - 1).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i + 1 <= this.getDim() - 1 && j <= this.getDim() - 1 && i + 1 >= 0 && j >= 0)
+                    if (this.getCell(i + 1, j).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i + 1, j).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i + 1 <= this.getDim() - 1 && j + 1 <= this.getDim() - 1 && i + 1 >= 0 && j + 1 >= 0)
+                    if (this.getCell(i + 1, j + 1).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j + 1));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i + 1, j + 1).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i <= this.getDim() - 1 && j + 1 <= this.getDim() - 1 && i >= 0 && j >= 0)
+                    if (this.getCell(i, j + 1).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i, j + 1));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i, j + 1).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i - 1 <= this.getDim() - 1 && j + 1 <= this.getDim() - 1 && i - 1 >= 0 && j + 1 >= 0)
+                    if (this.getCell(i - 1, j + 1).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j + 1));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i - 1, j + 1).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+
+                if (i - 1 >= 0 && j >= 0 && i - 1 <= this.getDim() - 1 && j <= this.getDim() - 1)
+                    if (this.getCell(i - 1, j).getValue() != CellVal.wall){
+                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j));
+                    Pair<Integer, Integer> edge = new Pair<>(this.getCell(i, j).getId(), this.getCell(i - 1, j).getId());
+                    this.getEdge2distance().put(edge, 1);
+                }
+            }
+        }
+    }
 
     public void printLab(){
+        System.out.println();
         for(int i = 0; i < endPos.getX()+1; i++) {
             System.out.println();
             for(int j = 0; j < endPos.getX()+1; j++) {
@@ -85,6 +160,14 @@ public abstract class Labyrinth implements ILabyrinth{
                     System.out.print('w');
                 if(lab[i][j].getValue() == CellVal.empty)
                     System.out.print('e');
+                if(lab[i][j].getValue() == CellVal.red)
+                    System.out.print('r');
+                if(lab[i][j].getValue() == CellVal.yellow)
+                    System.out.print('y');
+                if(lab[i][j].getValue() == CellVal.cyan)
+                    System.out.print('c');
+                if(lab[i][j].getValue() == CellVal.green)
+                    System.out.print('g');
             }
         }
     }

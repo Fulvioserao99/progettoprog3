@@ -189,6 +189,10 @@ public class AntSystem
         return convergedPath(pathCount);
     }
 
+    public Set<Integer> getNodes() {
+        return nodes;
+    }
+
     /**
      * Unleashes an ant from the 'src' node, hoping it will reach the 'dest' node.
      * @param src The node to unleash the ant from.

@@ -1,7 +1,7 @@
 public class EasyLabyrinth extends Labyrinth{
 
     EasyLabyrinth(){
-        super(4,4);
+        super(8);
     }
 
     public void generateLab(){
@@ -14,7 +14,6 @@ public class EasyLabyrinth extends Labyrinth{
 
     };
 
-    public void createGraph(){}
 
     @Override
     public void printIds() {

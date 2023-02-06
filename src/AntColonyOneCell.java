@@ -12,7 +12,7 @@ public class AntColonyOneCell implements Strategy{
 
     @Override
     public ArrayList<Integer> calculateNextMove(Cell cell) {
-        Vector<Integer> path = aco.path(cell.getId(),aco.getEdge2distance().get(aco.getEdge2distance().size()-1));
+        Vector<Integer> path = aco.path(cell.getId(),aco.getNodes().size()-1);
         ArrayList<Integer> result = new ArrayList<>(1);
         result.add(path.get(1));
         return result;

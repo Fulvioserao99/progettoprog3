@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class MediumLabyrinth extends Labyrinth {
 
     MediumLabyrinth() {
-        super(8, 8);
+        super(8);
     }
 
     public void generateLab() {
@@ -28,72 +28,6 @@ public class MediumLabyrinth extends Labyrinth {
 
     }
 
-    public void createGraph(){
-
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                if (this.getCell(i,j).getValue() == CellVal.wall)
-                    continue;
-
-                if(i-1 >= 0 && j-1 >=0){
-                    if (this.getCell(i-1,j-1).getValue() != CellVal.wall)
-                       this.getCell(i,j).addNeighbours(this.getCell(i-1,j-1));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i-1,j-1).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i >=0 && j-1>=0){
-                    if (this.getCell(i,j-1).getValue() != CellVal.wall)
-                        this.getCell(i,j).addNeighbours(this.getCell(i,j-1));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i,j-1).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i+1 >=0 && j-1 >=0 && j-1<=8-1 && i+1 <=8-1){
-                    if (this.getCell(i+1,j-1).getValue() != CellVal.wall)
-                        this.getCell(i,j).addNeighbours(this.getCell(i+1,j-1));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i+1,j-1).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i+1 <=8-1 && j <= 8-1 && i+1 >=0 && j >=0){
-                    if (this.getCell(i+1,j).getValue() != CellVal.wall)
-                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i+1,j).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i+1 <=8-1 && j+1 <=8-1 && i+1 >=0 && j+1 >=0){
-                    if (this.getCell(i+1,j+1).getValue() != CellVal.wall)
-                        this.getCell(i, j).addNeighbours(this.getCell(i + 1, j + 1));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i+1,j+1).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i <=8-1 && j+1 <=8-1 && i >=0 && j >=0){
-                    if (this.getCell(i, j + 1).getValue() != CellVal.wall)
-                        this.getCell(i, j).addNeighbours(this.getCell(i, j + 1));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i,j+1).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i-1 <=8-1 && j+1 <=8-1 && i-1 >=0 && j+1 >=0){
-                    if (this.getCell(i - 1, j + 1).getValue() != CellVal.wall)
-                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j + 1));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i-1,j+1).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-
-                if(i-1 >=0 && j >=0 && i-1 <=8-1 && j <=8-1){
-                    if (this.getCell(i-1,j).getValue() != CellVal.wall)
-                        this.getCell(i, j).addNeighbours(this.getCell(i - 1, j));
-                        Pair<Integer, Integer> edge = new Pair<>(this.getCell(i,j).getId(), this.getCell(i-1,j).getId());
-                        this.getEdge2distance().put(edge,1);
-                    }
-            }
-        }
-
-    }
     public void printNeighboursNumber() {
 
         for (int i = 0; i < 8; i++) {
