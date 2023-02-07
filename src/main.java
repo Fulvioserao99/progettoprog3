@@ -4,7 +4,7 @@ public class main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Game instance = new Game("romano","pertosi",1);
+        Game instance = new Game("romano","pertosi",3);
         ExampleSub example = new ExampleSub();
         instance.subscribe(example);
         instance.notifySubscribers();
@@ -20,6 +20,7 @@ public class main {
             if (instance.getRobotPos() == instance.goal())
                 break;
         }
+        System.out.println();
         System.out.println();
         System.out.println("Hai raggiunto la soluzione in " + steps + " passi!");
 

@@ -1,109 +1,78 @@
+import java.util.*;
 /*
- * AcoPath for Java: Shortest path calculation using Ant Colony Optimization
- * Copyright (C) 2021-2022 by Constantine Kyriakopoulos
- * zfox@users.sourceforge.net
- * @version 1.0.2
- *
- * @section LICENSE
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
-
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
+Implementazione rivisitata del lavoro di zFoxer.
+Questa classe gestisce l'ACO, implementato e modificato specificatamente
+per il problema di cammino minimo, da un nodo sorgente a un nodo destinazione,
+in un grafo orientato e pesato.
+*/
 
 public class AntSystem
 {
-    /**
-     * The default number of ants to unleash in each iteration.
-     */
-    public static final int ANTS = 300;
 
     /**
-     * Total default number of iterations for ant unleashing.
-     */
-    public static final int ITERATIONS = 100;
-
-    /**
-     * Initial pheromone quantity.
+     * Quantita' iniziale di feromone
      */
     public static final int PHERO_QNT = 100;
 
     /**
-     * Provides importance to its base parameter.
+     * Parametro che definisce l'importanza dei feromoni nella scelta del prossimo nodo.
      */
-    public static final double A = 1;
+    public static final double ALPHA = 1;
 
     /**
-     * Provides importance to its base parameter.
+     * Parametro che definisce l'importanza dei dati rimanenti nella scelta del prossimo nodo.
      */
-    public static final double B = 5;
+    public static final double BETA = 5;
 
     /**
-     * Percentage of pheromone evaporation.
+     * Percentuale di evaporazione dei feromoni.
      */
-    public static final double EVAPORATE_PER = 0.5;
+    public static final double EVAPORATE_PER_SECOND = 0.5;
 
     /**
-     * Denotes that no neighbour exists for this node.
+     * Costante che indica l'assenza di vicini.
      */
     public static final int NO_NEIGHBOUR = -1;
 
     /**
-     * Denote that no pheromone exists for this edge.
+     * Costante che indica l'assenza di feromoni.
      */
-    public static final int NO_PHEROMONE = -1;
+    public static final int NO_PHERO = -1;
 
     /**
-     * Set containing topology's nodes.
+     * Set contenente la topologia dei nodi.
      */
     private Set<Integer> nodes = new TreeSet<>();
 
     /**
-     * Mapping each edge to its distance.
+     * Map che associa ogni arco (coppia intero-intero) alla sua distanza.
      */
-    private Map<Pair<Integer, Integer>, Integer> edge2distance = new HashMap<>();
+    private Map<Pair<Integer, Integer>, Integer> edgeAndWeight = new HashMap<>();
 
     /**
-     * The number of ants to unleash in each iteration.
+     * Numero di formiche.
      */
     private int ants = 0;
 
     /**
-     * Total number of iterations for ant unleashing.
+     * Numero totale di iterazioni.
      */
     private int iterations = 0;
 
     /**
-     * Creates a new Ant System from a container of edges mapped to their distances.
-     * @param edge2distance Topology representation.
+     * Inizializza la classe, con i parametri:
+     * @param edgeAndWeight rappresentazione degli archi con le loro distanze
+     * @param ants numero di formiche
+     * @param iterations numero di iterazioni
      */
-    public AntSystem(Map<Pair<Integer, Integer>, Integer> edge2distance, int ants, int iterations)
+    public AntSystem(Map<Pair<Integer, Integer>, Integer> edgeAndWeight, int ants, int iterations)
     {
         this.ants = ants;
         this.iterations = iterations;
-        this.edge2distance = edge2distance;
+        this.edgeAndWeight = edgeAndWeight;
         try
         {
-            init();
+            start();
         }
         catch(Exception e)
         {
@@ -115,21 +84,16 @@ public class AntSystem
 
     }
 
-    public Map<Pair<Integer, Integer>, Integer> getEdge2distance() {
-        return edge2distance;
+    public Map<Pair<Integer, Integer>, Integer> getEdgeAndWeight() {
+        return edgeAndWeight;
     }
 
     /**
-     * Initialises the Ant System.
+     * Inizializza l'ant system
      */
-    private void init()
+    private void start()
     {
-        if(ants <= 0)
-            ants = ANTS;
-        if(iterations <= 0)
-            iterations = ITERATIONS;
-
-        Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
+        Set<Pair<Integer, Integer>> keys = edgeAndWeight.keySet();
         for(Pair<Integer, Integer> edge : keys)
         {
             nodes.add(edge.getLeft());
@@ -138,17 +102,17 @@ public class AntSystem
     }
 
     /**
-     * Creates a container representing the topology with initial pheromone quantity on its edges.
-     * @return double[][] A two dimensional array with the amount of pheromone each edge carries initially.
+     * Rappresenta in forma matriciale la topologia del labirinto, con la rispettiva quantita' di feromone su ogni arco
+     * @return double[][] Una matrice contenente, su ogni arco, l'ammontare iniziale di feromone
      */
-    private double[][] createPheroTopo()
+    private double[][] createTopology()
     {
         double[][] edge2phero = new double[nodes.size()][nodes.size()];
         for(int i = 0; i < nodes.size(); ++i)
             for(int j = 0; j < nodes.size(); ++j)
-                edge2phero[i][j] = NO_PHEROMONE;
+                edge2phero[i][j] = NO_PHERO;
 
-        Set<Pair<Integer, Integer>> keys = edge2distance.keySet();
+        Set<Pair<Integer, Integer>> keys = edgeAndWeight.keySet();
         for(Pair<Integer, Integer> edge : keys)
             edge2phero[edge.getLeft()][edge.getRight()] = PHERO_QNT;
 
@@ -156,15 +120,15 @@ public class AntSystem
     }
 
     /**
-     * Returns the path consisting of a sequence of nodes, starting from 'src' and ending to 'dest'.
-     * @param src Path starting node.
-     * @param dest Path ending node.
-     * @return Vector<Integer> A node sequence comprising the path.
+     * Restituisce il cammino trovato tra una sequenza di nodi, compresi tra:
+     * @param src nodo sorgente
+     * @param dest nodo destinazione
+     * @return ArrayList<Integer> Sequenza di nodi, restituiti come Integer, del cammino tra source e dest
      */
-    public Vector<Integer> path(int src, int dest)
+    public ArrayList<Integer> pathCalculator(int src, int dest)
     {
-        Map<Vector<Integer>, Integer> pathCount = new HashMap<>();
-        double[][] edge2phero = createPheroTopo();
+        Map<ArrayList<Integer>, Integer> pathCount = new HashMap<>();
+        double[][] edgePheroQnt = createTopology();
 
         int i = 0;
         while(i++ < iterations)
@@ -172,7 +136,7 @@ public class AntSystem
             int ant = 0;
             while(ant++ < ants)
             {
-                Vector<Integer> tour = unleashAnt(src, dest, edge2phero);
+                ArrayList<Integer> tour = antColonyVisit(src, dest, edgePheroQnt);
                 if(tour.size() > 1)
                     if(pathCount.containsKey(tour))
                     {
@@ -182,7 +146,7 @@ public class AntSystem
                     else
                         pathCount.put(tour, 1);
             }
-            updateTrails(pathCount, edge2phero);
+            updatePheroQnt(pathCount, edgePheroQnt);
         }
 
         return convergedPath(pathCount);
@@ -193,58 +157,59 @@ public class AntSystem
     }
 
     /**
-     * Unleashes an ant from the 'src' node, hoping it will reach the 'dest' node.
-     * @param src The node to unleash the ant from.
-     * @param dest The node for the ant to reach.
-     * @param edge2phero Topology's edges with the amount of pheromone for each.
-     * @return Vector<Integer> The path traversal for this ant.
+     * Fa partire le formiche dal nodo sorgente, cercando di trovare un cammino fino alla destinazione
+     * @param src nodo sorgente
+     * @param dest nodo destinazioni
+     * @param edgePheroQnt Una matrice contenente, su ogni arco, l'ammontare di feromone
+     * @return ArrayList<Integer> il cammino della formica iesima.
      */
-    private Vector<Integer> unleashAnt(int src, int dest, double[][] edge2phero)
+    private ArrayList<Integer> antColonyVisit(int src, int dest, double[][] edgePheroQnt)
     {
-        Vector<Integer> trace = new Vector<>();
+        ArrayList<Integer> trace = new ArrayList<>();
         int node = src;
         trace.add(node);
 
         while(node != dest)
         {
-            int neighbour = pickUpNeighbour(node, edge2phero);
+            int neighbour = pickUpNeighbour(node, edgePheroQnt);
             if(neighbour == NO_NEIGHBOUR)
-                break;  //  Dead end
+                break;
             if(!trace.contains(neighbour))
                 trace.add(neighbour);
             else
-                break;  //  Cycle
+                break;
 
             node = neighbour;
         }
 
         if(trace.size() <= 1)
-            return new Vector<Integer>();
+            return new ArrayList<Integer>();
 
-        return trace.firstElement() == src && trace.lastElement() == dest ? trace : new Vector<Integer>();
+        return trace.get(0) == src && trace.get(trace.size()-1) == dest ? trace : new ArrayList<Integer>();
     }
 
     /**
-     * Picks up the next neighbour to continue the traversal.
-     * @param node The current node.
-     * @param edge2phero The amount of pheromone each edge carries currently.
-     * @return Integer The next neighbour.
+     * Funzione che sceglie il prossimo nodo adiacente da visitare.
+     * @param node nodo corrente
+     * @param edgePheroQnt Una matrice contenente, su ogni arco, l'ammontare di feromone
+     * @return Integer Identificativo del vicino.
      */
-    private Integer pickUpNeighbour(int node, double[][] edge2phero)
+    private Integer pickUpNeighbour(int node, double[][] edgePheroQnt)
     {
-        Vector<Integer> neighs = availNeighbours(node, edge2phero);     //  Unsorted neighbours
+        ArrayList<Integer> neighs = availableNeighbours(node, edgePheroQnt);     //  Unsorted neighbours
         if(neighs.size() == 0)
             return NO_NEIGHBOUR;
 
         double probs[] = new double[neighs.size()];
         int index = 0;
-        // Produce a transition probability to each one
+
+
         for(int neigh : neighs)
-            probs[index++] = prob(node, neigh, edge2phero);
+            probs[index++] = probCalculator(node, neigh, edgePheroQnt);
 
         double value = Math.random();
-        // Sort probabilities in range [0, 1] and use a uniform distro to
-        // pick up an index domain
+
+
         double sum = 0;
         for(index = 0; index < neighs.size(); ++index)
         {
@@ -253,80 +218,79 @@ public class AntSystem
                 break;
         }
 
-        return neighs.size() > 0 ? neighs.elementAt(index) : NO_NEIGHBOUR;
+        return neighs.size() > 0 ? neighs.get(index) : NO_NEIGHBOUR;
     }
 
     /**
-     * Checks node's available neighbours.
-     * @param node The current node to check its available neighbours.
-     * @param edge2phero The amount of pheromone each edge carries currently.
-     * @return Vector<Integer> Node's neighbours collected.
+     * Controlla i vicini disponibili.
+     * @param node nodo corrente
+     * @param edgePheroQnt Una matrice contenente, su ogni arco, l'ammontare di feromone
+     * @return Vector<Integer> Un insieme di vicini disponibili
      */
-    private Vector<Integer> availNeighbours(int node, double[][] edge2phero)
+    private ArrayList<Integer> availableNeighbours(int node, double[][] edgePheroQnt)
     {
-        Vector<Integer> neighbours = new Vector<>();
+        ArrayList<Integer> neighbours = new ArrayList<>();
 
-        for(int i = 0; i < edge2phero[node].length; ++i)
-            if(edge2phero[node][i] >= 0 && i != node)
+        for(int i = 0; i < edgePheroQnt[node].length; ++i)
+            if(edgePheroQnt[node][i] >= 0 && i != node)
                 neighbours.add(i);
 
         return neighbours;
     }
 
     /**
-     * Produces a probability number to pick up node 'j' from node 'i'.
-     * @param i Starting edge node.
-     * @param j Ending edge node.
-     * @param edge2phero The amount of pheromone each edge carries currently.
-     * @return double The probability.
-     * @throws IllegalArgumentException In case no available neighbours exist.
+     * Calcola la probabilita' di scelta di un particolare nodo
+     * @param start nodo di partenza
+     * @param end nodo di destinazione
+     * @param edgePheroQnt Una matrice contenente, su ogni arco, l'ammontare di feromone
+     * @return double Probabilita'.
      */
-    private double prob(int i, int j, double[][] edge2phero) throws IllegalArgumentException
+    private double probCalculator(int start, int end, double[][] edgePheroQnt) throws IllegalArgumentException
     {
-        double num = Math.pow(edge2phero[i][j], A) * Math.pow(heuInfo(i, j), B);
+        double num = Math.pow(edgePheroQnt[start][end], ALPHA) * Math.pow(heuristicProd(start, end), BETA);
         double denum = 0;
-        Vector<Integer> neighs = availNeighbours(i, edge2phero);
+        ArrayList<Integer> neighs = availableNeighbours(start, edgePheroQnt);
         if(neighs.size() == 0)
             throw new IllegalArgumentException("prob(..): No neighbours");
 
         for(int neigh : neighs)
-            denum += Math.pow(edge2phero[i][neigh], A) * Math.pow(heuInfo(i, neigh), B);
+            denum += Math.pow(edgePheroQnt[start][neigh], ALPHA) * Math.pow(heuristicProd(start, neigh), BETA);
 
         return num / denum;
     }
 
     /**
-     * Produces the heuristic value from node 'i' from node 'j'.
-     * @param i Starting edge node.
-     * @param j Ending edge node.
-     * @return double The heuristic info.
+     * Produce la stima euristica di scelta di un arco, dal nodo sorgente, al nodo destinazione
+     * @param start nodo di partenza
+     * @param end nodo di destinazione
+     * @return double La stima euristica
      */
-    private double heuInfo(int i, int j)
+    private double heuristicProd(int start, int end)
     {
-        //  Should not be in the return statement
-        double distance = edge2distance.get(new Pair<Integer, Integer>(i, j));
+
+        double distance = edgeAndWeight.get(new Pair<Integer, Integer>(start, end));
 
         return 1 / distance;
     }
 
     /**
-     * Calculates the sum of path's edge distances.
-     * @param path The node sequence comprising the path.
-     * @return The total path distance.
+     * Calcola la somma dei pesi degli archi in un cammino
+     * @param path la sequenza di nodi
+     * @return double costo totale, in termini di peso, del cammino
      */
-    private double tourLength(Vector<Integer> path)
+    private double tourLength(ArrayList<Integer> path)
     {
         if(path.size() <= 1)
             return 0;
 
-        //  The Lk value: Edge weight sum
+
         Iterator it = path.iterator();
         double pathSum = 0;
         int strNode = (int)it.next();
         while(it.hasNext())
         {
             int endNode = (int)it.next();
-            pathSum += edge2distance.get(new Pair<Integer, Integer>(strNode, endNode));
+            pathSum += edgeAndWeight.get(new Pair<Integer, Integer>(strNode, endNode));
             strNode = endNode;
         }
 
@@ -334,116 +298,53 @@ public class AntSystem
     }
 
     /**
-     * Updates traversed paths pheromone levels.
-     * @param evalPaths The traversed paths to update their pheromone levels.
-     * @param edge2phero The amount of pheromone each edge carries currently.
+     * Funzione che aggiorna i livelli di feromone sugli archi
+     * @param paths I cammini sui quali aggiornare il livello di feromone
+     * @param edgePheroQnt Una matrice contenente, su ogni arco, l'ammontare di feromone
      */
-    private void updateTrails(Map<Vector<Integer>, Integer> evalPaths, double[][] edge2phero)
+    private void updatePheroQnt(Map<ArrayList<Integer>, Integer> paths, double[][] edgePheroQnt)
     {
-        // Evaporate existing pheromone levels
+
         for(int i = 0; i < nodes.size(); ++i)
             for(int j = 0; j < nodes.size(); ++j)
-                if(edge2phero[i][j] != NO_PHEROMONE)
-                    edge2phero[i][j] *= (1 - EVAPORATE_PER);
+                if(edgePheroQnt[i][j] != NO_PHERO)
+                    edgePheroQnt[i][j] *= (1 - EVAPORATE_PER_SECOND);
 
-        // Increase pheromone level upon correct paths
-        Set<Vector<Integer>> onlyTrails = evalPaths.keySet();
-        for(Vector<Integer> path : onlyTrails)
+
+        Set<ArrayList<Integer>> onlyTrails = paths.keySet();
+        for(ArrayList<Integer> path : onlyTrails)
         {
             Iterator<Integer> it = path.iterator();
             int str = it.next();
             while(it.hasNext())
             {
                 int end = it.next();
-                edge2phero[str][end] += PHERO_QNT / tourLength(path);
+                edgePheroQnt[str][end] += PHERO_QNT / tourLength(path);
                 str = end;
             }
         }
     }
 
     /**
-     * Returns the path with the higher occurrence.
-     * @param pathCount A map of paths to occurrence numbers for each.
-     * @return Vector<Integer> The chosen path.
+     * Funzione che restituisce il cammino convergente, ovvero quello con la piu' alta occorrenza
+     * @param pathCount Una map che associa un cammino con la sua occorrenza
+     * @return Vector<Integer> il cammino
      */
-    Vector<Integer> convergedPath(Map<Vector<Integer>, Integer> pathCount)
+    ArrayList<Integer> convergedPath(Map<ArrayList<Integer>, Integer> pathCount)
     {
-        //  Choose the return path
-        Vector<Integer> retpath = new Vector<>();
+
+        ArrayList<Integer> returnpath = new ArrayList<>();
         Integer cnt = Integer.MIN_VALUE;
 
-        Set<Vector<Integer>> keys = pathCount.keySet();
-        for(Vector<Integer> path : keys)
+        Set<ArrayList<Integer>> keys = pathCount.keySet();
+        for(ArrayList<Integer> path : keys)
             if(pathCount.get(path) > cnt)
             {
                 cnt = pathCount.get(path);
-                retpath = path;
+                returnpath = path;
             }
 
-        return retpath;
+        return returnpath;
     }
 }
 
-/**
- * Typical pair record.
- * @param lhs The left item.
- * @param rhs The right item.
- * @param <L> The type of the left item.
- * @param <R> The type of the right item.
- */
-record Pair<L, R>(L lhs, R rhs)
-{
-    /**
-     * Asserts for the null case.
-     * @param lhs The left hand side.
-     * @param rhs The right hand side.
-     */
-    Pair
-    {
-        assert lhs != null;
-        assert rhs != null;
-    }
-
-    /**
-     * Returns the left item.
-     * @return The left hand side.
-     */
-    public L getLeft()
-    {
-        return lhs;
-    }
-
-    /**
-     * Returns the right item.
-     * @return The right hand side item.
-     */
-    public R getRight()
-    {
-        return rhs;
-    }
-
-    /**
-     * Hashcode method.
-     * @return int The hash code.
-     */
-    @Override
-    public int hashCode()
-    {
-        return lhs.hashCode() ^ rhs.hashCode();
-    }
-
-    /**
-     * Checks for equality.
-     * @param obj The reference object with which to compare.
-     * @return true If equals.
-     */
-    @Override
-    public boolean equals(Object obj)
-    {
-        if(!(obj instanceof Pair))
-            return false;
-
-        Pair pairObj = (Pair)obj;
-        return this.lhs.equals(pairObj.getLeft()) && this.rhs.equals(pairObj.getRight());
-    }
-}

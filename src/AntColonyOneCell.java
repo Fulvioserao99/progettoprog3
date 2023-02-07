@@ -25,13 +25,15 @@ public class AntColonyOneCell implements Strategy{
 
     @Override
     public ArrayList<Integer> calculateNextMove(Cell cell) {
-        Vector<Integer>path;
+        ArrayList<Integer>path;
+        int solution;
         do{
-            path = aco.path(cell.getId(),aco.getNodes().size()-1);
+            path = aco.pathCalculator(cell.getId(),aco.getNodes().size()-1);
         }
         while(path.size() == 0);
-        ArrayList<Integer> result = new ArrayList<>(1);
-        result.add(path.get(1));
-        return result;
+        solution = path.get(1);
+        path.clear();
+        path.add(solution);
+        return path;
     }
 }
