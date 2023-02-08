@@ -12,7 +12,7 @@ public abstract class Labyrinth implements ILabyrinth{
 
     private int dim;
 
-    private Graph noWallCells;
+    private Graph<Cell> noWallCells;
 
     public Labyrinth(int dim){
 
@@ -25,7 +25,7 @@ public abstract class Labyrinth implements ILabyrinth{
         this.startPos = lab[0][0].getPos();
         this.endPos = lab[dim-1][dim-1].getPos();
         this.dim = dim;
-        this.noWallCells = new Graph(this.lab,this.dim);
+        this.noWallCells = new GraphLab(this.lab,this.dim);
     }
     public Cell[][] getLab() {
         return lab;
