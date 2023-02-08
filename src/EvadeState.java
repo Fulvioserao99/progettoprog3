@@ -1,13 +1,12 @@
 import java.util.ArrayList;
-import java.util.Map;
 
 public class EvadeState implements State {
 
     private Cell cell;
     Strategy strategy;
 
-    EvadeState(Cell cell){
-        this.strategy = new RandomMove();
+    EvadeState(Cell cell, MultiMap<Integer, Integer> edges){
+        this.strategy = new RandomMove(edges);
         this.cell = cell;
     }
     @Override

@@ -1,9 +1,10 @@
+import java.security.Key;
 import java.util.*;
 /*
 Implementazione rivisitata del lavoro di zFoxer.
 Questa classe gestisce l'ACO, implementato e modificato specificatamente
 per il problema di cammino minimo, da un nodo sorgente a un nodo destinazione,
-in un grafo orientato e pesato.
+in un grafo orientato e non pesato.
 */
 
 public class AntSystem
@@ -47,7 +48,7 @@ public class AntSystem
     /**
      * Map che associa ogni arco (coppia intero-intero) alla sua distanza.
      */
-    private Map<Pair<Integer, Integer>, Integer> edgeAndWeight = new HashMap<>();
+    private MultiMap<Integer, Integer> edges = new MultiMap<>();
 
     /**
      * Numero di formiche.
@@ -61,15 +62,16 @@ public class AntSystem
 
     /**
      * Inizializza la classe, con i parametri:
-     * @param edgeAndWeight rappresentazione degli archi con le loro distanze
+     * @param edges rappresentazione degli archi
      * @param ants numero di formiche
      * @param iterations numero di iterazioni
      */
-    public AntSystem(Map<Pair<Integer, Integer>, Integer> edgeAndWeight, int ants, int iterations)
+    public AntSystem(MultiMap<Integer, Integer> edges, int ants, int iterations)
     {
         this.ants = ants;
         this.iterations = iterations;
-        this.edgeAndWeight = edgeAndWeight;
+        this.edges = edges;
+
         try
         {
             start();
@@ -80,25 +82,22 @@ public class AntSystem
         }
     }
 
-    public AntSystem() {
-
-    }
-
-    public Map<Pair<Integer, Integer>, Integer> getEdgeAndWeight() {
-        return edgeAndWeight;
-    }
 
     /**
      * Inizializza l'ant system
      */
     private void start()
-    {
-        Set<Pair<Integer, Integer>> keys = edgeAndWeight.keySet();
-        for(Pair<Integer, Integer> edge : keys)
-        {
-            nodes.add(edge.getLeft());
-            nodes.add(edge.getRight());
+    {       //credo nessun cambiamento
+        for(Integer node1 : edges.keySet()){
+            Collection<Integer> collection = edges.get(node1);
+            for (Integer node2 : collection) {
+                nodes.add(node1);
+                nodes.add(node2);
+
+            }
         }
+
+
     }
 
     /**
@@ -112,9 +111,11 @@ public class AntSystem
             for(int j = 0; j < nodes.size(); ++j)
                 edge2phero[i][j] = NO_PHERO;
 
-        Set<Pair<Integer, Integer>> keys = edgeAndWeight.keySet();
-        for(Pair<Integer, Integer> edge : keys)
-            edge2phero[edge.getLeft()][edge.getRight()] = PHERO_QNT;
+        for(Integer node1 : edges.keySet()) {
+            Collection<Integer> collection = edges.get(node1);
+            for (Integer node2 : collection)
+                edge2phero[node1][node2] = PHERO_QNT;
+        }
 
         return edge2phero;
     }
@@ -196,7 +197,7 @@ public class AntSystem
      */
     private Integer pickUpNeighbour(int node, double[][] edgePheroQnt)
     {
-        ArrayList<Integer> neighs = availableNeighbours(node, edgePheroQnt);     //  Unsorted neighbours
+        ArrayList<Integer> neighs = availableNeighbours(node, edgePheroQnt);
         if(neighs.size() == 0)
             return NO_NEIGHBOUR;
 
@@ -247,54 +248,30 @@ public class AntSystem
      */
     private double probCalculator(int start, int end, double[][] edgePheroQnt) throws IllegalArgumentException
     {
-        double num = Math.pow(edgePheroQnt[start][end], ALPHA) * Math.pow(heuristicProd(start, end), BETA);
+        double num = Math.pow(edgePheroQnt[start][end], ALPHA) * Math.pow(1, BETA);
         double denum = 0;
         ArrayList<Integer> neighs = availableNeighbours(start, edgePheroQnt);
         if(neighs.size() == 0)
             throw new IllegalArgumentException("prob(..): No neighbours");
 
         for(int neigh : neighs)
-            denum += Math.pow(edgePheroQnt[start][neigh], ALPHA) * Math.pow(heuristicProd(start, neigh), BETA);
+            denum += Math.pow(edgePheroQnt[start][neigh], ALPHA) * Math.pow(1, BETA);
 
         return num / denum;
     }
 
-    /**
-     * Produce la stima euristica di scelta di un arco, dal nodo sorgente, al nodo destinazione
-     * @param start nodo di partenza
-     * @param end nodo di destinazione
-     * @return double La stima euristica
-     */
-    private double heuristicProd(int start, int end)
-    {
-
-        double distance = edgeAndWeight.get(new Pair<Integer, Integer>(start, end));
-
-        return 1 / distance;
-    }
 
     /**
      * Calcola la somma dei pesi degli archi in un cammino
      * @param path la sequenza di nodi
      * @return double costo totale, in termini di peso, del cammino
      */
-    private double tourLength(ArrayList<Integer> path)
+    private int tourLength(ArrayList<Integer> path) //metodo riscrivibile col primo if e un else
     {
         if(path.size() <= 1)
             return 0;
 
-
-        Iterator it = path.iterator();
-        double pathSum = 0;
-        int strNode = (int)it.next();
-        while(it.hasNext())
-        {
-            int endNode = (int)it.next();
-            pathSum += edgeAndWeight.get(new Pair<Integer, Integer>(strNode, endNode));
-            strNode = endNode;
-        }
-
-        return pathSum;
+        return path.size();
     }
 
     /**
@@ -318,7 +295,7 @@ public class AntSystem
             int str = it.next();
             while(it.hasNext())
             {
-                int end = it.next();
+                int end = it.next();                  //qua andrebbe path.size() o modifica tourlength
                 edgePheroQnt[str][end] += PHERO_QNT / tourLength(path);
                 str = end;
             }

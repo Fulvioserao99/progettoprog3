@@ -56,14 +56,5 @@ public class HardLabyrinth extends Labyrinth{
 
     }
 
-    public  void printNeighboursNumber(){
 
-
-    };
-
-
-    @Override
-    public void printIds() {
-
-    }
 }

@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
+
 
 public class AntColonyOneCell implements Strategy{
 
     private AntSystem aco;
 
-    public AntColonyOneCell(Map<Pair<Integer, Integer>, Integer> edges) {
+    public AntColonyOneCell(MultiMap<Integer, Integer> edges) {
         int ants,iterations;
         if (edges.size() == 256){
             ants = 100;
@@ -20,6 +20,7 @@ public class AntColonyOneCell implements Strategy{
             ants = 50;
             iterations = 100;
         }
+
         this.aco = new AntSystem(edges, ants, iterations);
     }
 

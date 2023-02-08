@@ -6,7 +6,7 @@ public class SeekState implements State{
     private Cell cell;
     Strategy strategy;
 
-    SeekState(Map<Pair<Integer, Integer>, Integer> edges, Cell cell){
+    SeekState(MultiMap<Integer, Integer> edges, Cell cell){
         this.strategy = new AntColonyOneCell(edges);
         this.cell = cell;
     }

@@ -28,25 +28,7 @@ public class MediumLabyrinth extends Labyrinth {
 
     }
 
-    public void printNeighboursNumber() {
 
-        for (int i = 0; i < 8; i++) {
-            System.out.println();
-            for (int j = 0; j < 8; j++){
-                System.out.print(this.getCell(i,j).getNeighbours().size());
-            }
-        }
-    };
-
-    public void printIds() {
-
-        for (int i = 0; i < 8; i++) {
-            System.out.println();
-            for (int j = 0; j < 8; j++){
-                System.out.print(this.getCell(i,j).getId());
-            }
-        }
-    };
 
 
 

@@ -30,6 +30,10 @@ public class Robot{
         return actualCell;
     }
 
+    public CellVal getActualCellValue() {
+        return actualCell.getValue();
+    }
+
     public void setRobotState(State robotState) {
         this.robotState = robotState;
     }
@@ -45,9 +49,6 @@ public class Robot{
     public State getPrevState() {
         return prevState;
     }
-
-
-
     public ArrayList<Integer> doAction(Cell cell) {
         return this.robotState.doAction(cell);
     }

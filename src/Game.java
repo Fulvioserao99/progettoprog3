@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
 public class Game {
 
@@ -33,7 +31,7 @@ public class Game {
                 this.lab = (HardLabyrinth) labi.createLab();
                 break;
         }
-        this.robot = new Robot(nome,cognome,lab.getCell(0,0),new PursuitState(this.lab.getEdge2distance(), this.lab.getCell(0,0)));
+        this.robot = new Robot(nome,cognome,lab.getCellById(0),new PursuitState(this.lab.getEdges(), lab.getCellById(0)));
         subscribers = new ArrayList<>();
     }
 
@@ -81,19 +79,11 @@ public class Game {
     }
 
     Position goal(){
-        return this.getLab()[this.lab.getDim()-1][this.lab.getDim()-1].getPos();
+        return this.lab.getEndPos();
     }
 
-    void printLabyrinth(){
-        this.lab.printLab();
-    }
     ArrayList<Integer> nextMove(){
         return this.robot.doAction(this.robot.getActualCell());
-    }
-
-    void changeRobotState(){
-        this.robot.setRobotState(new FleeState(this.lab.getEdge2distance(), this.lab.getCell(0,0)));
-        //this.robot.setRobotState(new EvadeState(this.lab.getCell(0,0)));
     }
 
     Position getRobotPos(){
@@ -104,7 +94,7 @@ public class Game {
         ArrayList<Integer> nextMove;
         int size =0;
 
-        if (this.robot.getActualCell().getValue() == CellVal.empty){
+        if (this.robot.getActualCellValue() == CellVal.empty){
             nextMove = nextMove();
             while (size < nextMove.size()){
                 this.robot.setActualCell(this.lab.getCellById(nextMove.get(size)));
@@ -112,20 +102,20 @@ public class Game {
             }
         }
 
-        else if (this.robot.getActualCell().getValue() == CellVal.green){
-            this.robot.setRobotState(new PursuitState(this.lab.getEdge2distance(), this.robot.getActualCell()));
+        else if (this.robot.getActualCellValue() == CellVal.green){
+            this.robot.setRobotState(new PursuitState(this.lab.getEdges(), this.robot.getActualCell()));
             nextMove = nextMove();
             this.robot.setActualCell(this.lab.getCellById(nextMove.get(size)));
         }
 
-        else if (this.robot.getActualCell().getValue() == CellVal.red){
-            this.robot.setRobotState(new SeekState(this.lab.getEdge2distance(), this.robot.getActualCell()));
+        else if (this.robot.getActualCellValue() == CellVal.red){
+            this.robot.setRobotState(new SeekState(this.lab.getEdges(), this.robot.getActualCell()));
             nextMove = nextMove();
             this.robot.setActualCell(this.lab.getCellById(nextMove.get(size)));
         }
 
-        else if (this.robot.getActualCell().getValue() == CellVal.yellow){
-            this.robot.setRobotState(new FleeState(this.lab.getEdge2distance(), this.robot.getActualCell()));
+        else if (this.robot.getActualCellValue() == CellVal.yellow){
+            this.robot.setRobotState(new FleeState(this.lab.getEdges(), this.robot.getActualCell()));
             nextMove = nextMove();
             while (size < nextMove.size()){
                 this.robot.setActualCell(this.lab.getCellById(nextMove.get(size)));
@@ -133,8 +123,8 @@ public class Game {
             }
         }
 
-        else if (this.robot.getActualCell().getValue() == CellVal.cyan){
-            this.robot.setRobotState(new EvadeState(this.robot.getActualCell()));
+        else if (this.robot.getActualCellValue() == CellVal.cyan){
+            this.robot.setRobotState(new EvadeState(this.robot.getActualCell(),this.lab.getEdges()));
             nextMove = nextMove();
             this.robot.setActualCell(this.lab.getCellById(nextMove.get(size)));
         }
