@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class GraphLab extends Graph{
 
     Cell[][] lab;
@@ -14,14 +12,25 @@ public class GraphLab extends Graph{
 
 
     @Override
+    public Cell getNode(Integer index) {
+
+        for (int i = 0; i < this.dim; i++)
+            for (int j = 0; j < this.dim; j++) {
+                if (this.lab[i][j].getId() == index)
+                    return lab[i][j];
+            }
+
+        return null;
+    }
+
+    @Override
     public void graphGen(){
         int id = 0;
         for (int i = 0; i < this.dim; i++)
             for (int j = 0; j < this.dim; j++)
-                if (this.lab[i][j].getValue() != CellVal.wall) {
+                if (this.lab[i][j].getValue() != CellVal.wall)
                     this.lab[i][j].setId(id++);
-                    this.addNode(lab[i][j]);
-                }
+
 
 
 

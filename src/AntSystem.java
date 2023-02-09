@@ -43,7 +43,7 @@ public class AntSystem
     /**
      * Set contenente la topologia dei nodi.
      */
-    private Set<Integer> nodes = new TreeSet<>();
+    int nodes;
 
     /**
      * Map che associa ogni arco (coppia intero-intero) alla sua distanza.
@@ -87,17 +87,8 @@ public class AntSystem
      * Inizializza l'ant system
      */
     private void start()
-    {       //credo nessun cambiamento
-        for(Integer node1 : edges.keySet()){
-            Collection<Integer> collection = edges.get(node1);
-            for (Integer node2 : collection) {
-                nodes.add(node1);
-                nodes.add(node2);
-
-            }
-        }
-
-
+    {
+        nodes = this.edges.keySet().size();
     }
 
     /**
@@ -106,9 +97,9 @@ public class AntSystem
      */
     private double[][] createTopology()
     {
-        double[][] edge2phero = new double[nodes.size()][nodes.size()];
-        for(int i = 0; i < nodes.size(); ++i)
-            for(int j = 0; j < nodes.size(); ++j)
+        double[][] edge2phero = new double[nodes][nodes];
+        for(int i = 0; i < nodes; ++i)
+            for(int j = 0; j < nodes; ++j)
                 edge2phero[i][j] = NO_PHERO;
 
         for(Integer node1 : edges.keySet()) {
@@ -153,7 +144,7 @@ public class AntSystem
         return convergedPath(pathCount);
     }
 
-    public Set<Integer> getNodes() {
+    public int getNodes() {
         return nodes;
     }
 
@@ -266,7 +257,7 @@ public class AntSystem
      * @param path la sequenza di nodi
      * @return double costo totale, in termini di peso, del cammino
      */
-    private int tourLength(ArrayList<Integer> path) //metodo riscrivibile col primo if e un else
+    private int tourLength(ArrayList<Integer> path)
     {
         if(path.size() <= 1)
             return 0;
@@ -282,8 +273,8 @@ public class AntSystem
     private void updatePheroQnt(Map<ArrayList<Integer>, Integer> paths, double[][] edgePheroQnt)
     {
 
-        for(int i = 0; i < nodes.size(); ++i)
-            for(int j = 0; j < nodes.size(); ++j)
+        for(int i = 0; i < nodes; ++i)
+            for(int j = 0; j < nodes; ++j)
                 if(edgePheroQnt[i][j] != NO_PHERO)
                     edgePheroQnt[i][j] *= (1 - EVAPORATE_PER_SECOND);
 
@@ -295,7 +286,7 @@ public class AntSystem
             int str = it.next();
             while(it.hasNext())
             {
-                int end = it.next();                  //qua andrebbe path.size() o modifica tourlength
+                int end = it.next();
                 edgePheroQnt[str][end] += PHERO_QNT / tourLength(path);
                 str = end;
             }

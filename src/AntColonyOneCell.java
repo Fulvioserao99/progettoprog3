@@ -29,7 +29,7 @@ public class AntColonyOneCell implements Strategy{
         ArrayList<Integer>path;
         int solution;
         do{
-            path = aco.pathCalculator(cell.getId(),aco.getNodes().size()-1);
+            path = aco.pathCalculator(cell.getId(),aco.getNodes()-1);
         }
         while(path.size() == 0);
         solution = path.get(1);

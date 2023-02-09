@@ -28,7 +28,7 @@ public class AntColonyTwoCells implements Strategy{
         ArrayList<Integer>path;
         int size = 0;
         do{
-            path = aco.pathCalculator(cell.getId(),aco.getNodes().size()-1);
+            path = aco.pathCalculator(cell.getId(),aco.getNodes()-1);
         }
         while(path.size() == 0);
         ArrayList<Integer> result = new ArrayList<>(2);

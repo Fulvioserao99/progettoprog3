@@ -2,7 +2,7 @@ public class main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Game instance = new Game("romano","pertosi",1);
+        Game instance = new Game("romano","pertosi",3);
         ExampleSub example = new ExampleSub();
         instance.subscribe(example);
         instance.notifySubscribers();
